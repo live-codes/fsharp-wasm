@@ -1,0 +1,4 @@
+D:\DevWork\bolero\FSharpRunner\publish\runtimeconfig.template.json
+D:\DevWork\bolero\FSharpRunner\publish\FSharpRunner.runtimeconfig.json
+D:\DevWork\bolero\FSharpRunner\publish\dotnet.js
+D:\DevWork\bolero\FSharpRunner\publish\web.config

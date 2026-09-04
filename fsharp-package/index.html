@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>F# in the Browser — Bolero / .NET WASM demo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type='module' src="./main.js"></script>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --panel: #161a22;
+      --border: #2a3040;
+      --text: #d7dce4;
+      --muted: #8b93a3;
+      --accent: #3782da;
+      --err: #e5534b;
+      --ok: #3fb950;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 { font-size: 15px; margin: 0; font-weight: 600; }
+    header span { color: var(--muted); font-size: 12px; }
+
+    #status {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    #status.loading { color: var(--accent); }
+    #status.ready { color: var(--ok); }
+
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 12px;
+      height: calc(100vh - 52px);
+    }
+
+    .panel {
+      display: flex;
+      flex-direction: column;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .panel-title {
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    textarea {
+      flex: 1;
+      resize: none;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      padding: 12px;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.5;
+      tab-size: 4;
+    }
+
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.5; cursor: default; }
+
+    #output {
+      flex: 1;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      overflow: auto;
+    }
+    #output .error { color: var(--err); }
+    #output .warning { color: #d29922; }
+    #output .diagnostic { color: var(--muted); margin-top: 4px; }
+
+    @media (max-width: 800px) {
+      main { grid-template-columns: 1fr; height: auto; }
+      textarea { min-height: 40vh; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>F# in the browser</h1>
+    <span>real F# compiler (FSharp.Compiler.Service) running on .NET WebAssembly via Bolero — no backend</span>
+    <div id="status">loading runtime…</div>
+  </header>
+
+  <main>
+    <div class="panel">
+      <div class="panel-title">
+        <span>Main.fs</span>
+        <button id="run" disabled>Run</button>
+      </div>
+      <textarea id="code" spellcheck="false">module Main
+
+let hello name =
+    printfn "Hello, %s!" name
+
+let AsyncMain =
+    async {
+        hello "F# from WebAssembly"
+        let evens = [ 1..20 ] |> List.filter (fun n -> n % 2 = 0)
+        printfn "Evens: %A" evens
+        printfn "Sum: %d" (evens |> List.sum)
+    }</textarea>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span>Output</span></div>
+      <div id="output">Waiting…</div>
+    </div>
+  </main>
+</body>
+
+</html>

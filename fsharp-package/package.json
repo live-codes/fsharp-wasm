@@ -1,0 +1,25 @@
+﻿{
+    "description":  "F# in the browser: the real F# compiler (FSharp.Compiler.Service) running on .NET WebAssembly via Bolero. No backend.",
+    "type":  "module",
+    "version":  "0.1.0",
+    "files":  [
+                  "_framework",
+                  "fsharp-compiler.js",
+                  "index.html",
+                  "main.js"
+              ],
+    "name":  "@live-codes/fsharp-wasm",
+    "main":  "fsharp-compiler.js",
+    "homepage":  "https://github.com/live-codes/livecodes",
+    "license":  "MIT",
+    "keywords":  [
+                     "fsharp",
+                     "f#",
+                     "wasm",
+                     "webassembly",
+                     "bolero",
+                     "compiler",
+                     "playground",
+                     "livecodes"
+                 ]
+}

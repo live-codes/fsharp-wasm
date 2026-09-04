@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>F# via CDN — demo</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --panel: #161a22;
+        --border: #2a3040;
+        --text: #d7dce4;
+        --muted: #8b93a3;
+        --accent: #3782da;
+        --err: #e5534b;
+        --ok: #3fb950;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        background: var(--bg);
+        color: var(--text);
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 16px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+        flex-wrap: wrap;
+      }
+      header h1 {
+        font-size: 15px;
+        margin: 0;
+      }
+      #status {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      #status.loading {
+        color: var(--accent);
+      }
+      #status.ready {
+        color: var(--ok);
+      }
+      main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 12px;
+        height: calc(100vh - 52px);
+      }
+      .panel {
+        display: flex;
+        flex-direction: column;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .panel-title {
+        padding: 6px 12px;
+        font-size: 12px;
+        color: var(--muted);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      textarea {
+        flex: 1;
+        resize: none;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: var(--text);
+        padding: 12px;
+        font-family: inherit;
+        font-size: 13px;
+        line-height: 1.5;
+        tab-size: 4;
+      }
+      button {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 14px;
+        font-family: inherit;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      #output {
+        flex: 1;
+        padding: 12px;
+        font-size: 13px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        overflow: auto;
+      }
+      #output .error {
+        color: var(--err);
+      }
+      #base {
+        flex: 1;
+        min-width: 200px;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--muted);
+        padding: 5px 8px;
+        font-family: inherit;
+        font-size: 11px;
+      }
+      @media (max-width: 800px) {
+        main {
+          grid-template-columns: 1fr;
+          height: auto;
+        }
+        textarea {
+          min-height: 40vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>F# via CDN</h1>
+      <input id="base" spellcheck="false" title="Bundle base URL" />
+      <div id="status">not loaded</div>
+    </header>
+    <main>
+      <div class="panel">
+        <div class="panel-title">
+          <span>Main.fs</span><button id="run" disabled>Run</button>
+        </div>
+        <textarea id="code" spellcheck="false">
+module Main
+
+let hello name =
+    printfn "Hello, %s!" name
+
+let AsyncMain =
+    async {
+        hello "F# loaded from CDN"
+        let evens = [ 1..20 ] |> List.filter (fun n -> n % 2 = 0)
+        printfn "Evens: %A" evens
+        printfn "Sum: %d" (evens |> List.sum)
+    }</textarea
+        >
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span>Output</span></div>
+        <div id="output"></div>
+      </div>
+    </main>
+
+    <script>
+      // The bundle base URL (a folder containing _framework/dotnet.js + fsharp-compiler.js).
+      var defaultBase =
+        new URLSearchParams(location.search).get("base") || "./";
+      document.getElementById("base").value = defaultBase;
+    </script>
+    <script src="./fsharp-package/fsharp-compiler.js"></script>
+    <script>
+      var status = document.getElementById("status");
+      var runBtn = document.getElementById("run");
+      var codeEl = document.getElementById("code");
+      var outputEl = document.getElementById("output");
+      var baseEl = document.getElementById("base");
+
+      function write(text, cls) {
+        var node = document.createElement("div");
+        node.className = cls || "";
+        node.textContent = text;
+        outputEl.appendChild(node);
+      }
+
+      async function boot() {
+        var base = baseEl.value.replace(/\/+$/, "") + "/";
+        window.FSharpWasmBaseUrl = base;
+        status.textContent = "downloading runtime + F# compiler…";
+        status.className = "loading";
+        try {
+          await FSharpRunner.init();
+          status.textContent = "ready";
+          status.className = "ready";
+          runBtn.disabled = false;
+          outputEl.textContent = "";
+        } catch (err) {
+          status.textContent = "failed";
+          status.className = "";
+          outputEl.textContent = String((err && err.stack) || err);
+        }
+      }
+
+      runBtn.addEventListener("click", async function () {
+        runBtn.disabled = true;
+        outputEl.textContent = "";
+        write("Compiling…");
+        await new Promise(function (r) {
+          setTimeout(r, 50);
+        });
+        try {
+          var res = await FSharpRunner.run(codeEl.value);
+          outputEl.textContent = "";
+          if (!res.ok) {
+            (res.errors || []).forEach(function (e) {
+              write(
+                "error FS" +
+                  e.errorNumber +
+                  (e.line ? " (line " + e.line + ")" : "") +
+                  ": " +
+                  e.message,
+                "error",
+              );
+            });
+          } else {
+            write(res.output || "(no output)");
+            (res.warnings || []).forEach(function (w) {
+              write(
+                "warning FS" +
+                  w.errorNumber +
+                  ": " +
+                  w.message +
+                  (w.line ? " (line " + w.line + ")" : ""),
+                "warning",
+              );
+            });
+          }
+        } catch (err) {
+          write(String((err && err.stack) || err), "error");
+        }
+        runBtn.disabled = false;
+      });
+
+      boot();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "+KU3OHyJWlg=",
+  "success": true,
+  "projectFilePath": "D:\\DevWork\\bolero\\FSharpRunner.Node\\FSharpRunner.Node.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\hatem\\.nuget\\packages\\fsharp.compiler.service\\43.12.400\\fsharp.compiler.service.43.12.400.nupkg.sha512",
+    "C:\\Users\\hatem\\.nuget\\packages\\fsharp.core\\10.1.400\\fsharp.core.10.1.400.nupkg.sha512"
+  ],
+  "logs": []
+}

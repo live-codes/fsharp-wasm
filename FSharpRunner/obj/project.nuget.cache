@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "EqAocH9ugZg=",
+  "success": true,
+  "projectFilePath": "D:\\DevWork\\bolero\\FSharpRunner\\FSharpRunner.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\hatem\\.nuget\\packages\\fsharp.compiler.service\\43.12.400\\fsharp.compiler.service.43.12.400.nupkg.sha512",
+    "C:\\Users\\hatem\\.nuget\\packages\\fsharp.core\\10.1.400\\fsharp.core.10.1.400.nupkg.sha512",
+    "C:\\Users\\hatem\\.nuget\\packages\\microsoft.net.sdk.webassembly.pack\\10.0.11\\microsoft.net.sdk.webassembly.pack.10.0.11.nupkg.sha512"
+  ],
+  "logs": []
+}
