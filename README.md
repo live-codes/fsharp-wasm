@@ -116,36 +116,32 @@ inside a LiveCodes result frame. The bundle base URL is configurable via
 Deploy `fsharp-package/` to npm (jsDelivr: `https://cdn.jsdelivr.net/npm/@live-codes/fsharp-wasm@0.1.0/`)
 or any static host, then point `fsharpWasmBaseUrl` at it.
 
-## Stability & performance (important)
+## Stability & performance
 
 The .NET/F# compiler runs on the **single-threaded** wasm runtime. Two measured
 facts (see `FSharpRunner.Node`):
 
 1. **One runtime instance can only handle ~3 successful F# compiles.** The 4th
-   `FSharpChecker.Compile` deadlocks (this reproduces reliably on the wasm
-   runtime; the same code runs 20+ compiles fine on desktop CoreCLR). It is not
-   a managed-memory leak (managed heap is flat, GC runs) — it is an FCS-on-wasm
-   limitation we could not root-cause further.
+   `FSharpChecker.Compile` deadlocks (reproduces reliably on the wasm runtime;
+   the same code runs 20+ compiles fine on desktop CoreCLR). It is not a
+   managed-memory leak (managed heap is flat, GC runs) — it is an FCS-on-wasm
+   limitation.
 2. A fresh compile costs ~1–3 s (first run imports all reference assemblies;
    warm in-place compiles are ~0.5 s).
 
-Because of (1), the LiveCodes language spec uses **`liveReload: false`**. With
-live reload enabled, LiveCodes keeps the result frame alive and posts updates
-in place, so the compiler runtime accumulates and the page crashes after ~4
-edits. With live reload off, LiveCodes **rebuilds the result frame on every
-run**, giving the F# runtime a fresh instance each time — no accumulation, no
-crash. The trade-off is that each run is a full reload (~2–3 s) rather than an
-in-place warm update.
+The LiveCodes loader (`fsharp-compiler.js`) therefore runs the compiler inside a
+**Web Worker** and respawns the worker (a fresh runtime) after every 3 compiles
+(`MAX_RUNS`), plus a per-run timeout that kills and respawns a hung worker. This
+makes live reload safe: LiveCodes keeps the result frame and posts updates in
+place, the worker never reaches the 4th-compile deadlock, and the main thread
+never blocks. If Web Workers are unavailable (unusual sandbox), it falls back to
+main-thread compilation. User code should still avoid blocking calls
+(`Async.RunSynchronously`, `.Wait()`, `.Result`) — they deadlock the
+single-threaded runtime; use the `Main.AsyncMain` pattern instead.
 
-If you want fast in-place updates again, the fix is to run the compiler in a
-**Web Worker** and terminate/recreate the worker (fresh runtime) before it hits
-the ~3-compile limit. LiveCodes result frames allow workers
-(`sandbox="allow-same-origin allow-forms allow-scripts"`), so this is feasible;
-it is not implemented yet.
-
-User code should avoid blocking calls (`Async.RunSynchronously`, `.Wait()`,
-`.Result`) — they deadlock the single-threaded runtime. Use the
-`Main.AsyncMain` pattern (awaited cooperatively) instead.
+Why not just trim the reference assemblies to speed things up? Missing
+references make FCS's error-recovery path hang on wasm, so the full 168-assembly
+reference set is kept.
 
 ## Upgrading .NET
 

@@ -22,8 +22,9 @@ New-Item -ItemType Directory -Path $out -Force | Out-Null
 # Copy the static wasm bundle (dotnet.js, runtime, F# compiler, BCL, app assembly)
 Copy-Item (Join-Path $wwwroot "*") $out -Recurse -Force
 
-# The CDN loader wrapper
+# The CDN loader wrapper + its Web Worker
 Copy-Item (Join-Path $root "fsharp-compiler.js") $out -Force
+Copy-Item (Join-Path $root "fsharp-worker.js") $out -Force
 
 # npm metadata (jsDelivr serves package files at https://cdn.jsdelivr.net/npm/<name>@<version>/)
 $packageJson = @{
@@ -32,7 +33,7 @@ $packageJson = @{
     description = "F# in the browser: the real F# compiler running on .NET WebAssembly."
     type        = "module"
     main        = "fsharp-compiler.js"
-    files       = @("_framework", "fsharp-compiler.js", "index.html", "main.js")
+    files       = @("_framework", "fsharp-compiler.js", "fsharp-worker.js", "index.html", "main.js")
     keywords    = @("fsharp", "f#", "wasm", "webassembly", "bolero", "compiler", "playground", "livecodes")
     license     = "MIT"
     homepage    = "https://github.com/live-codes/livecodes"
