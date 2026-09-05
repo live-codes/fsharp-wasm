@@ -1,0 +1,4 @@
+D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\publish\runtimeconfig.template.json
+D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\publish\FSharpRunner.runtimeconfig.json
+D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\publish\dotnet.js
+D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\publish\web.config

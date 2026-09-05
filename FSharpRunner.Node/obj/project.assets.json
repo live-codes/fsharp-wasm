@@ -416,11 +416,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\DevWork\\bolero\\FSharpRunner.Node\\FSharpRunner.Node.csproj",
+      "projectUniqueName": "D:\\DevWork\\live-codes\\fsharp-wasm\\FSharpRunner.Node\\FSharpRunner.Node.csproj",
       "projectName": "FSharpRunner.Node",
-      "projectPath": "D:\\DevWork\\bolero\\FSharpRunner.Node\\FSharpRunner.Node.csproj",
+      "projectPath": "D:\\DevWork\\live-codes\\fsharp-wasm\\FSharpRunner.Node\\FSharpRunner.Node.csproj",
       "packagesPath": "C:\\Users\\hatem\\.nuget\\packages\\",
-      "outputPath": "D:\\DevWork\\bolero\\FSharpRunner.Node\\obj\\",
+      "outputPath": "D:\\DevWork\\live-codes\\fsharp-wasm\\FSharpRunner.Node\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\hatem\\AppData\\Roaming\\NuGet\\NuGet.Config"

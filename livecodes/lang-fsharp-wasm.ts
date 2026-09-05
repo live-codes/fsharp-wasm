@@ -11,7 +11,12 @@ export const fsharpWasm: LanguageSpecs = {
     scripts: [fsharpWasmBaseUrl + 'fsharp-compiler.js'],
     scriptType: 'text/fsharp-wasm',
     compiledCodeLanguage: 'fsharp-wasm',
-    liveReload: true,
+    // liveReload must stay OFF: with live reload LiveCodes keeps the result frame
+    // alive and the .NET/F# compiler runtime accumulates across runs and hangs
+    // (deadlocks) after ~4 compiles on the single-threaded wasm runtime. With
+    // liveReload off, LiveCodes rebuilds the result frame on each run, giving a
+    // fresh runtime instance (no hang).
+    liveReload: false,
   },
   extensions: ['fs', 'fsharp', 'fsx'],
   editor: 'script',

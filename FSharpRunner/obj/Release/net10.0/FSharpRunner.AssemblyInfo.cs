@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FSharpRunner")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ebf81afeae1c7e7ca975efd6d415de950898a364")]
 [assembly: System.Reflection.AssemblyProductAttribute("FSharpRunner")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FSharpRunner")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

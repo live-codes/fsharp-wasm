@@ -14,6 +14,9 @@ using Microsoft.FSharp.Core;
 /// <summary>Shared compile + execute logic used by both the browser app and the Node test harness.</summary>
 public static class FsharpCompile
 {
+    static readonly VirtualFileSystem Vfs = new VirtualFileSystem();
+    static bool _refsLoaded;
+
     static readonly FSharpChecker Checker = FSharpChecker.Create(
         null,
         null,
@@ -32,9 +35,6 @@ public static class FsharpCompile
         null,
         null,
         null);
-
-    static readonly VirtualFileSystem Vfs = new VirtualFileSystem();
-    static bool _refsLoaded;
 
     public static Task<string> Run(string source) => RunAsync(source);
 
