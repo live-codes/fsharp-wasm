@@ -1,5 +1,5 @@
 ﻿{
-    "description":  "F# in the browser: the real F# compiler (FSharp.Compiler.Service) running on .NET WebAssembly via Bolero. No backend.",
+    "description":  "F# in the browser: the real F# compiler running on .NET WebAssembly.",
     "type":  "module",
     "version":  "0.1.0",
     "files":  [

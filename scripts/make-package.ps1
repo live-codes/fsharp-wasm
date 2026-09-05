@@ -29,7 +29,7 @@ Copy-Item (Join-Path $root "fsharp-compiler.js") $out -Force
 $packageJson = @{
     name        = "@live-codes/fsharp-wasm"
     version     = $Version
-    description = "F# in the browser: the real F# compiler (FSharp.Compiler.Service) running on .NET WebAssembly via Bolero. No backend."
+    description = "F# in the browser: the real F# compiler running on .NET WebAssembly."
     type        = "module"
     main        = "fsharp-compiler.js"
     files       = @("_framework", "fsharp-compiler.js", "index.html", "main.js")
