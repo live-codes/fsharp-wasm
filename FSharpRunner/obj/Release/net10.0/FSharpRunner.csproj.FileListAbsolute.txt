@@ -1584,11 +1584,7 @@ D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\wwwroot\_fram
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\wwwroot\_framework\icudt_CJK.tjcz0u77k5.dat.gz
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\wwwroot\_framework\icudt_EFIGS.tptq2av103.dat.gz
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\wwwroot\_framework\icudt_no_CJK.lfu7j35m59.dat.gz
-D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\wwwroot\_framework\FSharpRunner.1jzsgq372r.wasm
-D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\wwwroot\_framework\FSharpRunner.dzfinzmrlh.pdb
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\wwwroot\_framework\dotnet.js
-D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\wwwroot\_framework\FSharpRunner.1jzsgq372r.wasm.gz
-D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\wwwroot\_framework\FSharpRunner.dzfinzmrlh.pdb.gz
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\wwwroot\_framework\dotnet.js.gz
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\Properties\launchSettings.json
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\runtimeconfig.template.json
@@ -2268,9 +2264,6 @@ D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\compressed\zk
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\compressed\61r5md2uxm-{0}-tjcz0u77k5-tjcz0u77k5.gz
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\compressed\lp4eafglyj-{0}-tptq2av103-tptq2av103.gz
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\compressed\be6v49s205-{0}-lfu7j35m59-lfu7j35m59.gz
-D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\compressed\3mep4uc1ib-{0}-1jzsgq372r-1jzsgq372r.gz
-D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\compressed\9zptem8rbj-{0}-dzfinzmrlh-dzfinzmrlh.gz
-D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\compressed\d9fcwxycpc-{0}-yq2ejjean0-yq2ejjean0.gz
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\staticwebassets.build.json
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\staticwebassets.build.json.cache
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\staticwebassets.development.json
@@ -2281,3 +2274,10 @@ D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\FSharpRunner.
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\refint\FSharpRunner.dll
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\FSharpRunner.pdb
 D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\ref\FSharpRunner.dll
+D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\wwwroot\_framework\FSharpRunner.0g2trwwwgu.wasm
+D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\wwwroot\_framework\FSharpRunner.kco700inqu.pdb
+D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\wwwroot\_framework\FSharpRunner.0g2trwwwgu.wasm.gz
+D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\bin\Release\net10.0\wwwroot\_framework\FSharpRunner.kco700inqu.pdb.gz
+D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\compressed\3mep4uc1ib-{0}-0g2trwwwgu-0g2trwwwgu.gz
+D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\compressed\9zptem8rbj-{0}-kco700inqu-kco700inqu.gz
+D:\DevWork\live-codes\fsharp-wasm\FSharpRunner\obj\Release\net10.0\compressed\d9fcwxycpc-{0}-aj0s35ld01-aj0s35ld01.gz

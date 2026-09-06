@@ -2,7 +2,9 @@
 
 Run F# code entirely in the browser — no backend. The real F# compiler
 (`FSharp.Compiler.Service`) runs on the .NET WebAssembly runtime, compiles user code to a .NET assembly in memory, loads it, and
-executes it. Program output (`printfn` …) is captured and returned.
+executes it. Program output (`printfn` …) is captured and returned, and program
+input can be fed to `Console.ReadLine()` / `Console.In` via a provided *stdin*
+string.
 
 This is the modern equivalent of
 [TryFSharpOnWasm](https://github.com/fsbolero/TryFSharpOnWasm) (which used the
@@ -30,7 +32,7 @@ ancient Mono Blazor 0.7 runtime). Here we use .NET 10 + the current
 
 | Project              | Purpose                                                                                     |
 | -------------------- | ------------------------------------------------------------------------------------------- |
-| `FSharpRunner`       | The browser app (`wasmbrowser`). Exposes `FSharpRunner.RunFsharp` via `[JSExport]`.         |
+| `FSharpRunner`       | The browser app (`wasmbrowser`). Exposes `FSharpRunner.RunFsharp(source [, stdin])` via `[JSExport]`. |
 | `FSharpRunner.Node`  | Test harness: same compile+run logic running under the wasm runtime in Node.js.             |
 | `prototype/FscProto` | Fast-iteration console app used to develop the FCS pipeline on .NET before porting to wasm. |
 | `scripts`            | `prepare-refs.ps1` (build ref assemblies) and `serve.js` (static server).                   |
@@ -50,7 +52,39 @@ ancient Mono Blazor 0.7 runtime). Here we use .NET 10 + the current
    `--noframework --simpleresolution --nowin32manifest` and all refs via `-r:`.
 4. **Execute** — the emitted `/tmp/out.exe` is loaded with `Assembly.Load` and its
    entry point invoked. If the code defines `module Main` with
-   `AsyncMain : Async<unit>`, that is awaited too. `Console` output is captured.
+   `AsyncMain : Async<unit>`, that is awaited too. `Console` output is captured
+   (via `Console.SetOut`), and program input is provided by installing a
+   `StringReader` as `Console.In` when a *stdin* argument is supplied
+   (`Console.SetIn`).
+
+## Standard input (`stdin`)
+
+User code frequently calls `Console.ReadLine()` / `Console.In`, and here the
+programmer supplies that input as a plain string. The input is threaded from the
+JS caller through to the managed runtime before the compiled program's `Main`
+runs.
+
+**API:** `FSharpRunner.RunFsharp(source: string, stdin?: string)` returns a
+`Promise<{ ok, output, errors[], warnings[] }>`. When `stdin` is provided, it is
+made available to the running program as a single stream via
+`Console.SetIn(new StringReader(stdin))`; the second argument is optional and may
+be omitted (then `Console.ReadLine()` immediately returns `null`/EOF).
+
+**How it flows (LiveCodes):**
+
+```
+livecodesApi.input ──> runner.run(code, input)
+                        └─ worker: postMessage({type:'compile', source, stdin, id})
+                        └─ main thread: FSharpRunner.RunFsharp(source, input)
+worker ──> exportsObj.FSharpRunner.RunFsharp(msg.source, msg.stdin ?? '')
+```
+
+**The wasm gotcha:** on the `browser-wasm` runtime, the `Console.In` **getter**
+throws `PlatformNotSupportedException` (there is no backing console-input
+device). So stdin is installed with `Console.SetIn(...)` *only* — never by
+reading `Console.In` (e.g. to save/restore the old value). The `CompileService`
+`Execute` method therefore does not persist/restore the previous `Console.In`;
+the runtime is one-shot and is discarded after the run.
 
 ## Key findings (gotchas)
 
@@ -87,16 +121,25 @@ wasm runtime:
   are the .NET runtime; `FSharpRunner.*.wasm` is the app with the embedded refs.
 - First load compiles F# the first time ~2–5 s (interpreter); subsequent runs are
   warm.
+- **Stdin:** LiveCodes threads its console-input field through the runner as the
+  optional second argument (`run(source, input)`), which is forwarded to the wasm
+  `RunFsharp(source, stdin)` export (in the worker via the `stdin` message field,
+  on the main thread directly). User code that calls `Console.ReadLine()`
+  therefore reads that text; reading past the end returns EOF.
 
 ## CDN loading (LiveCodes / any page)
 
 `fsharp-compiler.js` is a self-contained loader that pulls the whole wasm bundle
-from any static host/CDN and exposes `FSharpRunner.run(source)`:
+from any static host/CDN and exposes `FSharpRunner.run(source [, stdin])`:
 
 ```html
 <script src="https://cdn.example.com/fsharp/fsharp-compiler.js"></script>
 <script>
   FSharpRunner.run('printfn "Hello"').then((r) => console.log(r.output));
+  FSharpRunner.run(
+    'let s = System.Console.ReadLine()\nprintfn "Got: %s" s',
+    'hello stdin\n',
+  ).then((r) => console.log(r.output));
 </script>
 ```
 
@@ -113,8 +156,69 @@ inside a LiveCodes result frame. The bundle base URL is configurable via
 - `scripts/test-cdn-wrapper.mjs` — end-to-end validation of the wrapper +
   package in Node (`node scripts/test-cdn-wrapper.mjs`).
 
-Deploy `fsharp-package/` to npm (jsDelivr: `https://cdn.jsdelivr.net/npm/@live-codes/fsharp-wasm@0.1.0/`)
+Deploy `fsharp-package/` to npm (jsDelivr: `https://cdn.jsdelivr.net/npm/@live-codes/fsharp-wasm@0.3.0/`)
 or any static host, then point `fsharpWasmBaseUrl` at it.
+
+## Build & publish the npm package
+
+The deployable package (`fsharp-package/`) is produced in **two always-required
+steps**: rebuild the WASM, then copy it (and the JS loaders) into the package
+folder. `make-package.ps1` only copies already-published output — it does not
+compile, so always `dotnet publish` first.
+
+```powershell
+# 0) One-time: copy BCL refs + FSharp.Core (only when bumping .NET/FCS)
+powershell -ExecutionPolicy Bypass -File scripts\prepare-refs.ps1
+
+# 1) Recompile the F# runner WASM (required for any .NET/F# source change)
+dotnet publish FSharpRunner -c Release -o FSharpRunner\publish
+
+# 2) Assemble the npm-package folder (copies publish output + JS loaders)
+powershell -ExecutionPolicy Bypass -File scripts\make-package.ps1 -Version 0.4.0   # bump version
+
+# 3) Publish to npm (updates the jsDelivr URL)
+cd fsharp-package
+npm publish --access public
+```
+
+Then in the **LiveCodes** repo, update `src/livecodes/vendors.ts` to the new
+version:
+
+```ts
+export const fsharpWasmBaseUrl = /* @__PURE__ */ getUrl('@live-codes/fsharp-wasm@0.4.0/');
+```
+
+Rules of thumb:
+
+- **Always bump the version** whenever you change any `.cs` / `.fs` source that
+  changes the WASM. jsDelivr caches package URLs by version, so a non-bumped
+  publish will not be picked up by consumers.
+- Validate locally before publishing:
+  - `dotnet run --project FSharpRunner.Node` — runs the compile+run pipeline
+    (including stdin cases) on the real wasm runtime under Node.
+  - `node scripts\test-cdn-wrapper.mjs` — validates the CDN wrapper + package.
+- For local/CDN-less serving (e.g. dev): point any static server at the
+  `fsharp-package` folder after step 2, e.g.
+  `node scripts\serve.js fsharp-package 8080`.
+
+### Pinning the wasm-tools workload
+
+`FSharpRunner` needs the `wasm-tools` workload (`dotnet workload install
+wasm-tools`). If `dotnet publish` fails with
+`Workload set version <x> has missing manifests`, a corrupted/partial workload
+install is present (often an empty
+`<dotnet-root>\sdk-manifests\<sdk>\workloadsets\<version>` folder left behind by
+a failed install). From an elevated terminal:
+
+```powershell
+# remove the stale (empty) workload-set marker for your SDK band
+Remove-Item "C:\Program Files\dotnet\sdk-manifests\10.0.400\workloadsets\10.0.400.1" -Recurse -Force
+dotnet workload repair
+dotnet workload install wasm-tools
+```
+
+If you have multiple SDK installs, install/repair the workload on the exact SDK
+your `global.json` pins and run `dotnet publish` from that installation.
 
 ## Stability & performance
 

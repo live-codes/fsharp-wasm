@@ -1,7 +1,7 @@
 ﻿{
     "description":  "F# in the browser: the real F# compiler running on .NET WebAssembly.",
     "type":  "module",
-    "version":  "0.2.0",
+    "version":  "0.3.0",
     "files":  [
                   "_framework",
                   "fsharp-compiler.js",

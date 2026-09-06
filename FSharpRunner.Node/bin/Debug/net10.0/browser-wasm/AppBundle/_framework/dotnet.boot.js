@@ -1,7 +1,7 @@
 export const config = /*json-start*/{
   "mainAssemblyName": "FSharpRunner.Node.dll",
   "resources": {
-    "hash": "sha256-P37xxrnxDmhhjq/HncJoWnFDUGWHdjOZkwkJHqnQ9D8=",
+    "hash": "sha256-WA+8ysC8/2KfKlwwTVh3WJxRIW6LLqgZ1k662b5IfZc=",
     "jsModuleNative": [
       {
         "name": "dotnet.native.js"
@@ -921,14 +921,14 @@ export const config = /*json-start*/{
       {
         "virtualPath": "FSharpRunner.Node.wasm",
         "name": "FSharpRunner.Node.wasm",
-        "hash": "sha256-mbTNyJ+3ickhi1rqk2fxi/SFQOF4BMnhCT7rlmwEHbE="
+        "hash": "sha256-DAH18RtnnSAPSfwJGCr0lk3XDyh/iaWj5Wjkvgcxmz0="
       }
     ],
     "pdb": [
       {
         "virtualPath": "FSharpRunner.Node.pdb",
         "name": "FSharpRunner.Node.pdb",
-        "hash": "sha256-VJW4Q4g8zl5TfPzuUVi5uge0VRf/NhGLjbEp6KOQwaQ="
+        "hash": "sha256-0LfMcnaGx88Gd9q1sEEYAKSmKsTZuvgfhtxJ6hGAyts="
       }
     ],
     "satelliteResources": {

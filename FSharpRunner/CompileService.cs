@@ -36,7 +36,9 @@ public static class FsharpCompile
         null,
         null);
 
-    public static Task<string> Run(string source) => RunAsync(source);
+    public static Task<string> Run(string source) => RunAsync(source, null);
+
+    public static Task<string> Run(string source, string input) => RunAsync(source, input);
 
     public static void LoadRefs(Assembly resourceAssembly, string resourcePrefix = "lib.")
     {
@@ -66,7 +68,7 @@ public static class FsharpCompile
         FileSystemAutoOpens.FileSystem = Vfs;
     }
 
-    static async Task<string> RunAsync(string source)
+    static async Task<string> RunAsync(string source, string input)
     {
         LoadRefs(typeof(FsharpCompile).Assembly);
         try
@@ -97,7 +99,7 @@ public static class FsharpCompile
             var bytes = Vfs.GetFile("/tmp/out.exe");
             var asm = Assembly.Load(bytes);
 
-            var output = await Execute(asm);
+            var output = await Execute(asm, input);
             return Result(true, output, Array.Empty<FSharpDiagnostic>(), warnings);
         }
         catch (Exception ex)
@@ -128,13 +130,17 @@ public static class FsharpCompile
         return args.ToArray();
     }
 
-    static async Task<string> Execute(Assembly asm)
+    static async Task<string> Execute(Assembly asm, string input)
     {
         var sw = new StringWriter();
         var oldOut = Console.Out;
         var oldErr = Console.Error;
         Console.SetOut(sw);
         Console.SetError(sw);
+        // Provide stdin without ever reading Console.In: on the WebAssembly
+        // runtime the Console.In getter throws PlatformNotSupportedException
+        // (there is no backing console-input device), so only SetIn is used.
+        Console.SetIn(new StringReader(input ?? ""));
         try
         {
             var ep = asm.EntryPoint;

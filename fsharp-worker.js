@@ -31,7 +31,10 @@ self.onmessage = function (e) {
 
 async function compile(msg) {
   try {
-    var json = await exportsObj.FSharpRunner.RunFsharp(msg.source);
+    var json = await exportsObj.FSharpRunner.RunFsharp(
+      msg.source,
+      msg.stdin || "",
+    );
     self.postMessage({ type: "result", id: msg.id, json: json });
   } catch (err) {
     self.postMessage({

@@ -8,6 +8,6 @@ public partial class FSharpRunner
     }
 
     [JSExport]
-    internal static System.Threading.Tasks.Task<string> RunFsharp(string source) =>
-        FsharpCompile.Run(source);
+    internal static System.Threading.Tasks.Task<string> RunFsharp(string source, string input) =>
+        FsharpCompile.Run(source, input);
 }

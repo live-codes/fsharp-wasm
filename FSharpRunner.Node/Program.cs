@@ -49,6 +49,21 @@ Console.WriteLine("== test C: compile error ==");
 const string c = "let x = 'a'\nprintfn \"%s\" x\n";
 Console.WriteLine(await FsharpCompile.Run(c));
 
+Console.WriteLine("== test D: stdin (Console.ReadLine) ==");
+const string d = @"
+let line = System.Console.ReadLine()
+printfn ""Read: %s"" (if line = null then ""<null>"" else line)
+";
+Console.WriteLine(await FsharpCompile.Run(d, "hello from stdin\n"));
+
+Console.WriteLine("== test E: stdin without trailing newline ==");
+const string e = @"let line = System.Console.ReadLine()
+printfn ""Read: %s"" (if line = null then ""<null>"" else line)";
+Console.WriteLine(await FsharpCompile.Run(e, "no newline"));
+
+Console.WriteLine("== test F: no stdin provided (should read EOF) ==");
+Console.WriteLine(await FsharpCompile.Run(d));
+
 // Note: a single runtime instance can only safely run ~3 compiles before it hangs
 // (see README). The "rich" test runs in a fresh process via: dotnet run -- rich.
 

@@ -66,9 +66,12 @@
       return state.initPromise;
     }
 
-    function run(source) {
+    function run(source, input) {
       return init().then(function () {
-        return state.exports.FSharpRunner.RunFsharp(String(source)).then(JSON.parse);
+        return state.exports.FSharpRunner.RunFsharp(
+          String(source),
+          String(input || ""),
+        ).then(JSON.parse);
       });
     }
 
@@ -155,6 +158,7 @@
           `data:${type};charset=UTF-8;base64,` + btoa(content);
         var workerUrl = toDataUrl(`
           self.baseUrl = "${getBaseUrl()}";
+          self.dotnetSidecar = true;
           importScripts("${getBaseUrl() + 'fsharp-worker.js'}");
         `);
         worker = new Worker(workerUrl);
@@ -201,7 +205,7 @@
       });
     }
 
-    function run(source) {
+    function run(source, input) {
       try {
         ensureWorker();
       } catch (err) {
@@ -213,13 +217,15 @@
           worker.terminate();
           worker = null;
           spawn();
-          return readyPromise.then(runNow);
+          return readyPromise.then(function () {
+            return runNow(source, input);
+          });
         }
-        return runNow();
+        return runNow(source, input);
       });
     }
 
-    function runNow() {
+    function runNow(source, input) {
       var id = nextId++;
       var sourceText = String(source);
       runsOnWorker++;
@@ -234,7 +240,7 @@
           reject(new Error('F# compile timed out; restarted the compiler.'));
         }, RUN_TIMEOUT_MS);
         pending[id] = { resolve: resolve, reject: reject, timer: timer };
-        worker.postMessage({ type: 'compile', source: sourceText, id: id });
+        worker.postMessage({ type: "compile", source: sourceText, stdin: String(input || ""), id: id });
       });
     }
 
@@ -275,9 +281,9 @@
       return mainRunner.init();
     }
 
-    function run(source) {
+    function run(source, input) {
       return init().then(function () {
-        return (runner && !fellBack ? runner : mainRunner).run(source);
+        return (runner && !fellBack ? runner : mainRunner).run(source, input);
       });
     }
 
@@ -340,7 +346,7 @@
 
       await livecodesApi.init;
       try {
-        var result = await runner.run(code);
+        var result = await runner.run(code, livecodesApi.input);
         if (!result.ok) {
           var error = (result.errors || []).map(formatError).join('\n');
           livecodesApi.output = null;
